@@ -4,7 +4,7 @@ const routes = require('../src/routes/indexRoutes');
 const auth = require('../src/middleware/auth');
 
 const app = express();
-const port = 3001;
+const port = 3000;
 
 //conecta a la base de datos MongoDB
 connectDB()

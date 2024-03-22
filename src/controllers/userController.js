@@ -69,6 +69,56 @@ const userController = {
                 res.status(500).json({message: 'Internal server error'})
                 
             }
+        },
+
+        register: async (req, res) => {
+            try {
+                const users = await User.find();
+                const {userName, email, password} = req.body;
+
+                const userData = {
+                    userName: userName,
+                    email: email,
+                    password: await bcrypt.hash(password, 10),
+                    userid: users.length + 1
+                }
+
+                const newUser = new User(userData)
+                const savedUser = await newUser.save()
+                res.status(201).json(savedUser);
+                
+            } catch (error) {
+                console.error('Error al registar el usuarios:', error);
+                res.status(500).json({message: 'internal server error'})
+                
+            }
+        },
+
+        login: async (req, res) => {
+            try {
+                const {email, password} = req.body;
+                const user = await User.find({email: email});
+                if (!user) {
+                    return res.status(400).json({message: "Invalid username or password"});
+                }
+
+                const isPasswordValid = await bcrypt.compare(password, user[0].password);
+                if (!isPasswordValid) {
+                    return res.status(400).json({message: "Invalid username or password"});
+                }
+
+                const token = jwt.sign({userid: user.id}, jwt_secret,{
+                    expiresIn: "1h"
+                });
+
+                res.json({message: "Logged in successfully", token})
+
+
+            } catch (error) {
+                console.error('Error al loguear el usuario:', error);
+                res.status(500).json({message: 'Internal server error'});
+                
+            }
         }
 };
 
