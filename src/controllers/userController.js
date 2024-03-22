@@ -6,15 +6,16 @@ const jwtSecret = 'mysecret'
 
 const userController = {
     // create users//
-    createUser: (req, res) =>{
+    createUser: async (req, res) =>{
         const userData = req.body;
         try {
             const newUser = new User(userData)
-            const savedUser = newUser.save()
+            const savedUser = await newUser.save()
+            res.status(201).json(savedUser);
             
         } catch (error) {
             console.error('Error creating user', error);
-            res.status(501).json({message: 'internal server error'})
+            res.status(500).json({message: 'internal server error'})
             
         }
     },
@@ -48,6 +49,7 @@ const userController = {
             const {userName} = req.params
             const newUserName = req.body
             const userUpdate = await User.findOneAndUpdate({userName}, newUserName,{new: true})
+            res.json(userUpdate)
             
         } catch (error) {
             console.error('error updating user', error);
@@ -56,9 +58,19 @@ const userController = {
         }},
         // delete user //
 
+        deleteUser: async (req, res) => {
+            try {
+                const {userName} = req.params;
+                const deleteUser = await User.findOneAndDelete({userName: userName})
+                res.json(deleteUser)
+                
+            } catch (error) {
+                console.error('Error deleting user');
+                res.status(500).json({message: 'Internal server error'})
+                
+            }
+        }
+};
 
 
-
-
-
-}
+module.exports = userController;
