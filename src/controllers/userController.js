@@ -1,7 +1,7 @@
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const jwtSecret = 'mysecret'
+const jwt_secret = 'mysecret'
 
 
 const userController = {
@@ -79,12 +79,12 @@ const userController = {
                 const userData = {
                     userName: userName,
                     email: email,
-                    password: await bcrypt.hash(password, 10),
+                    password: await bcrypt.hash(password,10),
                     userid: users.length + 1
                 }
 
-                const newUser = new User(userData)
-                const savedUser = await newUser.save()
+                const newUser = new User(userData);
+                const savedUser = await newUser.save();
                 res.status(201).json(savedUser);
                 
             } catch (error) {
